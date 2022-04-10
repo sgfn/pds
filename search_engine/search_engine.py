@@ -116,7 +116,7 @@ def keyword_search(*args, w_dict={}, f_dict={}, load_w=True, w_path='w_dict.pick
     kw_v_len = 0
     for kw_x_i in kw_v:
         kw_v_len += kw_x_i*kw_x_i
-    kw_v_len **= 1/2
+    kw_v_len **= 0.5
 
     max_cosine_metric = -1
     res = '[no match]'
@@ -132,7 +132,7 @@ def keyword_search(*args, w_dict={}, f_dict={}, load_w=True, w_path='w_dict.pick
         for i, file_x_i in enumerate(file_v):
             dot_product += kw_v[i] * file_x_i
             file_v_len += file_x_i*file_x_i
-        file_v_len **= 1/2
+        file_v_len **= 0.5
     
         cosine_metric = dot_product / (kw_v_len*file_v_len)
         if detailed:    results.append((file_name, cosine_metric))
@@ -165,13 +165,9 @@ def kws_interactive(w_dict, f_dict):
     tr = str.maketrans(string.punctuation, ' '*len(string.punctuation))
     print("Keyword search - enter keywords separated by spaces\nEnter 'q' to quit, 'h' to display help message\n")
     query = input('Query: ')
-    active = True
     detailed = False
-    while active:
-        if query == 'q':
-            active = False
-            break
-        elif query == 'h':
+    while query != 'q':
+        if query == 'h':
             print('Available commands:\n\tq - quit\n\th - display this message')
             print('\td - toggle detailed mode\n\tn - input query with line breaks')
         elif query == 'd':
@@ -180,9 +176,10 @@ def kws_interactive(w_dict, f_dict):
         else:
             if query == 'n':
                 print("Multiple line query. When done, type '$' and press enter")
+                query = ''
                 t = input()
                 while t != '$':
-                    query += t
+                    query += ' ' + t
                     t = input()
             res = keyword_search(*query.translate(tr).lower().split(), w_dict=w_dict, 
                                  f_dict=f_dict, load_w=False, load_f=False, detailed=detailed)
